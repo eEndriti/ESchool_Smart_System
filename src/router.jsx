@@ -2,8 +2,12 @@ import { createBrowserRouter, createHashRouter, Navigate } from 'react-router-do
 import Home from './components/visitor/Home';
 import Layout from './components/visitor/Layout';
 import Login from './components/visitor/Login';
-// import NotFound from './components/NotFound'; // Uncomment if needed
-
+import NotFound from './RouteFiles/NotFound'; 
+import Teacher from './components/teacher/teacher';
+import Student from './components/student/student';
+import RoleProtectedRoute from './RouteFiles/RoleProtectedRoute';
+import UnAuthorized from './RouteFiles/UnAuthorized';
+import SideNavbar from './components/Universal Files/SideNavbar';
 const LayoutWrapper = () => {
   return <Layout />;
 };
@@ -13,25 +17,41 @@ const router = createBrowserRouter([
     path: '/',
     element: <LayoutWrapper />,
     children: [
-      {
-        index: true,           
-        element: <Home />,
-      },
-      {
-        path: 'home',          
-        element: <Home />,
-      },
-      {
-        path: 'login',          
-        element: <Login />,
-      },
-      // Uncomment this block if you add NotFound component
-      // {
-      //   path: '*',
-      //   element: <NotFound />,
-      // },
+      { index: true,   element: <Home />},
+      { path: 'home',  element: <Home />,},
+      { path: 'login', element: <Login />,},
+     
     ],
   },
+   {
+      path:'teacher',
+      element: <RoleProtectedRoute allowedRoles = {['teacher']} />,
+      children:[
+        {index:true,element: <Teacher/>}
+      ]
+    },
+     {
+      path: 'student',
+      element: (
+        <RoleProtectedRoute allowedRoles={['student']}>
+          <SideNavbar />
+        </RoleProtectedRoute>
+      ),
+      children: [
+        {
+          index: true,
+          element: <Student />
+        }
+      ]
+    }
+,{
+      path: '*',
+        element: <NotFound />,
+      },
+      {
+      path: 'unauthorized',
+        element: <UnAuthorized />,
+      },
 ]);
 
 export default router;

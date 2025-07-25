@@ -1,6 +1,39 @@
-import React from 'react';
-
+import React,{useState} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword,getAuth } from 'firebase/auth';
+import app from '../../firebaseConfig.js'
+import { doc, getFirestore,getDoc } from 'firebase/firestore';
 const Login = () => {
+
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
+  const auth = getAuth(app)
+  const navigate = useNavigate()
+
+  const handleLogin = async (e) =>{
+    e.preventDefault()
+    try {
+      const result = await signInWithEmailAndPassword(auth,email,password)
+      const role = await getUserRole()
+      if(role == 'student') navigate('/student')
+      else if(role == 'teacher') navigate('/teacher')
+} catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getUserRole = async () => {
+    const user = auth.currentUser
+    const db = getFirestore()
+
+    if(!user) return null
+    const userDoc = await getDoc(doc(db,"users",user.uid))
+    if(userDoc.exists()){
+      return userDoc.data().userRole
+    }
+    return null
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-slate-900 to-black">
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -15,9 +48,9 @@ const Login = () => {
           <div>
             <label className="block mb-1 text-sm">Email</label>
             <input
-              type="email"
+              type="email" value={email}
               className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/30 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-              placeholder="you@example.com"
+              placeholder="you@example.com" onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -25,7 +58,7 @@ const Login = () => {
           <div>
             <label className="block mb-1 text-sm">Password</label>
             <input
-              type="password"
+              type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/30 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
               placeholder="••••••••"
               required
@@ -33,7 +66,7 @@ const Login = () => {
           </div>
 
           <button
-            type="submit"
+            type="submit" onClick={(e) => handleLogin(e)}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-200"
           >
             Log In

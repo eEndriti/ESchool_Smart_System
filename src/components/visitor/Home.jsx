@@ -77,6 +77,7 @@ const Home = () => {
 
   return (
     <>
+
         <section className='pt-10' id='home'>
             <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="md:w-1/2 space-y-6">
