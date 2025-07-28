@@ -7,6 +7,8 @@ const Login = () => {
 
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
+  const [buttonLoading, setButtonLoading] = useState(false)
+
   const auth = getAuth(app)
   const navigate = useNavigate()
 
@@ -17,9 +19,11 @@ const Login = () => {
       const role = await getUserRole()
       if(role == 'student') navigate('/student')
       else if(role == 'teacher') navigate('/teacher')
-} catch (error) {
-      console.log(error)
-    }
+      else if(role == 'administrator') navigate('/administrator')
+      else if(role == 'parent') navigate('/parent')
+    } catch (error) {
+          console.log(error)
+        }
   }
 
   const getUserRole = async () => {
@@ -66,7 +70,7 @@ const Login = () => {
           </div>
 
           <button
-            type="submit" onClick={(e) => handleLogin(e)}
+            type="submit" onClick={(e) => handleLogin(e)} disabled = {buttonLoading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-200"
           >
             Log In

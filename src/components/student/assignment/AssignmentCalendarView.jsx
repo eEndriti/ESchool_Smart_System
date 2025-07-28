@@ -35,14 +35,14 @@ useEffect(() => {
   return (
     <div className=" p-4 rounded-xl   w-full">
         <div className="text-sm text-gray-500 m-2">📌 indicates a due assignment</div>
-        <div className='flex flex-row gap-6'>
+        <div className='flex flex-row flex-wrap gap-6'>
             <Calendar
             tileContent={tileContent}
             onClickDay={handleDateClick}
             className="REACT-CALENDAR p-2 rounded-lg"
         />
         {selectedDate && (
-            <div className="mt-4 text-sm text-gray-700">
+            <div className="mt-4 text-sm text-gray-700 flex flex-row flex-wrap">
             {clickedAssignment &&  <AssignmentCard key={clickedAssignment.id} assignment={clickedAssignment} />}
             </div>
         )}
