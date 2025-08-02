@@ -21,6 +21,7 @@ const Login = () => {
       else if(role == 'teacher') navigate('/teacher')
       else if(role == 'administrator') navigate('/administrator')
       else if(role == 'parent') navigate('/parent')
+      else if(role == 'principal') navigate('/principal')
     } catch (error) {
           console.log(error)
         }

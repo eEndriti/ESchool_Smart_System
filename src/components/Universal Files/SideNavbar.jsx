@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import userIcon from '../../assets/images/userIcon.png';
-import {
-  LogOut, LayoutDashboard, BookOpenText, NotebookPen,
-  Library, CalendarRange, NotebookText, MessagesSquare,BookOpenCheck
-} from 'lucide-react';
 import { signOut,getAuth } from 'firebase/auth';
 import app from '../../firebaseConfig.js'
 import { useUser } from './UserContext.jsx';
+import { faCubesStacked,faArrowRightFromBracket,faGrip,faBook,faUserTie,faChalkboardTeacher,faGraduationCap,faUsers,faClipboardCheck,faFileLines,faBookOpen,faCalendarDays,faComments,} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const SideNavbar = () => {
 
@@ -16,25 +14,24 @@ const SideNavbar = () => {
   const [buttonLoading, setButtonLoading] = useState(false)
   const { pathname } = useLocation();
   const {userRole} = useUser()
-  
+
 const navLinks = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '', roles: ['student', 'teacher', 'administrator','parent'] },
+  { label: 'Dashboard', icon: faGrip, path: '', roles: ['student', 'teacher', 'administrator','parent','principal'] },
 
-  { label: 'Students', icon: NotebookText, path: 'students', roles: ['parent'] },
+  { label: 'Classes', icon: faCubesStacked, path: 'classes', roles: ['administrator','principal'] },
+  { label: 'Subjects', icon: faBook, path: 'subjects', roles: ['student', 'teacher','administrator','principal'] },
+  { label: 'Administrators', icon: faUserTie, path: 'administrators', roles: ['principal'] },
+  { label: 'Teachers', icon: faChalkboardTeacher, path: 'teachers', roles: ['administrator','principal'] },
+  { label: 'Students', icon: faGraduationCap, path: 'students', roles: ['administrator','principal'] },
+  { label: 'Parents', icon: faUsers, path: 'parents', roles: ['administrator','principal'] },
+  { label: 'Assignemts', icon: faClipboardCheck, path: 'assignments', roles: ['student', 'teacher'] },
+  { label: 'Transcript', icon: faFileLines, path: 'transcript', roles: ['student'] },
+  { label: 'Library', icon: faBookOpen, path: 'library', roles: ['student', 'teacher','parent','administrator','principal'] },
+  { label: 'Events', icon: faCalendarDays, path: 'events', roles: ['student', 'teacher','parent','administrator','principal'] },
+  { label: 'Forum', icon: faComments, path: 'forum', roles: ['student', 'teacher','parent','administrator','principal'] },
 
-  { label: 'Subjects', icon: BookOpenText, path: 'subjects', roles: ['student', 'teacher','administrator'] },
-  { label: 'Assignemts', icon: NotebookPen, path: 'assignments', roles: ['student', 'teacher','parent'] },
-  { label: 'Transcript', icon: NotebookText, path: 'transcript', roles: ['student'] },
-  { label: 'Grades', icon: BookOpenCheck, path: 'grades', roles: ['teacher','parent'] },
-  { label: 'Library', icon: Library, path: 'library', roles: ['student', 'teacher','parent'] },
-  { label: 'Events', icon: CalendarRange, path: 'events', roles: ['student', 'teacher','parent'] },
-  { label: 'Forum', icon: MessagesSquare, path: 'forum', roles: ['student', 'teacher','parent'] },
 
-
-  { label: 'Teachers', icon: NotebookText, path: 'transcript', roles: ['administrator'] },
-  { label: 'Students', icon: NotebookText, path: 'transcript', roles: ['administrator'] },
-  { label: 'Classes', icon: NotebookText, path: 'transcript', roles: ['administrator'] },
-  { label: 'Parents', icon: NotebookText, path: 'transcript', roles: ['administrator'] },
+  
 ];
 
   const isActive = (linkPath) => {
@@ -52,7 +49,7 @@ const navLinks = [
 }`}
 
     >
-      <Icon className="inline text-[#CBD5E1] mx-2" />
+      <FontAwesomeIcon icon={Icon} className='text-lg px-3 text-blue-200'/>
       {label}
     </Link>
 
@@ -92,7 +89,7 @@ const handleLogout = () => {
         </nav>
         <button className="px-4 py-2 rounded-md bg-red-500 m-2 hover:bg-red-700 hover:cursor-pointer hover:text-white transition" onClick={handleLogout}
               disabled = {buttonLoading}>
-              Log Out <LogOut className="inline" />
+              Log Out <FontAwesomeIcon icon={faArrowRightFromBracket} />
             </button>
       </div>
 
@@ -116,7 +113,7 @@ const handleLogout = () => {
             ))}
             <button className="px-4 py-2 rounded-md bg-red-500 m-2 hover:bg-red-700 hover:cursor-pointer hover:text-white transition" onClick={handleLogout}
               disabled = {buttonLoading}>
-              Log Out <LogOut className="inline" />
+              Log Out <FontAwesomeIcon icon={faArrowRightFromBracket} />
             </button>
           </div>
         )}
