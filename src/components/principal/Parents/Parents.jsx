@@ -27,7 +27,7 @@ useEffect(() => {
     q,
     (snapshot) => {
       const users = snapshot.docs.map((d) => ({
-        userId: d.id,          
+        id: d.id,          
         ...d.data(),       
       }));
       setParents(users);

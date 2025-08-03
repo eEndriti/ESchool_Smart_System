@@ -24,7 +24,7 @@ export default function DeleteDocumentModal({open,title = "Are you sure?",descri
   }, [open]);
 
   const approved = async () => {
-    const ref = doc(db, collection, deleteData.userId);
+    const ref = doc(db, collection, deleteData.id);
     setButtonLoading(true);
     return toast
       .promise(deleteDoc(ref), {

@@ -1,10 +1,101 @@
-import { useState } from "react";
+import { addDoc, collection, onSnapshot, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
+import { db } from "../../../firebaseConfig";
+import { useToast } from "../../Universal Files/ToastProvider";
 
-export default function AddClassModal(onClose){
-    const [saveButtonDisabled, setSaveButtonDisabled] = useState(false)
+export default function AddClassModal({onClose,currentGeneration ={}}){
+    const [saveButtonDisabled, setSaveButtonDisabled] = useState(true)
     const [buttonLoading, setButtonLoading] = useState(false)
     const [classData, setClassData] = useState({})
+    const [teacherData,setTeacherData] = useState()
+    const [directions, setDirections] = useState([])
+    const [teachers,setTeachers] = useState([])
+    const [loading, setLoading] = useState(false)
+    const toast = useToast()
+
+    useEffect(() => {
+      const q = query(
+        collection(db, "users"),
+        where("userRole", "==", "teacher")
+      );
+    
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const users = snapshot.docs.map((d) => ({
+            userId: d.id,          
+            ...d.data(),       
+          }));
+          setTeachers(users);
+          setLoading(false);
+        },
+        (err) => {
+          console.error(err);
+          setLoading(false);
+        }
+      );
+    
+      return () => unsubscribe();
+    }, []);
+
+      useEffect(() => {
+      const q = query(
+        collection(db, "directions"),
+        where("generationID", "==", currentGeneration)
+      );
+    
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const dirs = snapshot.docs.map((d) => ({
+            directionID: d.id,          
+            ...d.data(),       
+          }));
+          setDirections(dirs);
+          setLoading(false);
+        },
+        (err) => {
+          console.error(err);
+          setLoading(false);
+        }
+      );
+    
+      return () => unsubscribe();
+    }, []);
+
+    useEffect(()=> {
+      if(classData?.class && classData?.level && teacherData?.teacherID && classData?.directionID){
+        setSaveButtonDisabled(false)
+      }else{
+        setSaveButtonDisabled(true)
+      }
+    },[classData])
+
+
+const saveClass = async (e) => {
+  e.preventDefault();
+    try {
+        setButtonLoading(true)
+        await addDoc(collection(db, "classes"), {
+        
+          class:classData.class,
+          level:classData.level,
+          teacherID:teacherData.teacherID,
+          teacherName:teacherData.teacherName,
+          directionID:classData.directionID,
+          createdDate: new Date().toISOString(),
+        });
+
+        toast.success('Direction is added successfully!')
+        onClose?.()
+    } catch (error) {
+        toast.error('Error Saving Direction: ',error)
+        console.log(error)
+    }finally{
+        setButtonLoading(false)
+    } 
+};
 
     return(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -21,7 +112,7 @@ export default function AddClassModal(onClose){
               type="text"
               className="w-full input"
               value={classData?.class}
-              onChange={(e) => setClassData({...prev , class:e.target.value})}
+              onChange={(e) => setClassData(prev => ({...prev , class:e.target.value}))}
               placeholder="Type the Class Name..."
             />
           </div>
@@ -29,26 +120,30 @@ export default function AddClassModal(onClose){
           <div>
             <label className="block mb-2 py-2 font-semibold text-gray-700">Level</label>
             <input
-              type="nuumber"
+              max={3}
+              min={1}
+              type="number"
               className="w-full input"
-              value={classData?.class}
-              onChange={(e) => setClassData({...prev , level:e.target.value})}
+              value={classData?.level}
+              onChange={(e) => setClassData(prev => ({...prev , level:e.target.value}))}
               placeholder="Type the Class Level, eg. 1,2,3"
             />
           </div>
 
            <div className="md:col-span-2">
-            <label className="block mb-2 font-semibold text-gray-700">Direction of Study</label>
+            <label className="block mb-2 font-semibold text-gray-700">Head Teacher</label>
             <div className="relative">
               <select
                 className="w-full appearance-none input pr-10 cursor-pointer"
-                value={role}
-                onChange={(e) => setClassData({...prev,direction:e.target.value})}
+                value={teacherData?.teacherID ?? ""}                         
+                onChange={(e) => setTeacherData({  teacherID: e.target.value,teacherName:e.target.selectedOptions[0].dataset.name })}
               >
-                {directions.map((r) => (
-                  <option key={r} value={r}>{r}</option>
+                <option value="" disabled>Select head teacher</option>
+                {teachers.map(t => (
+                  <option key={t.userId}  value={t.userId} data-name = {t.userName}>{t.userName}</option>
                 ))}
               </select>
+
               <div className="absolute top-2.5 right-3 pointer-events-none text-gray-400">
                 ▼
               </div>
@@ -60,13 +155,15 @@ export default function AddClassModal(onClose){
             <div className="relative">
               <select
                 className="w-full appearance-none input pr-10 cursor-pointer"
-                value={role}
-                onChange={(e) => setClassData({...prev,direction:e.target.value})}
+                value={classData.directionID ?? ""}
+                onChange={(e) => setClassData(prev => ({ ...prev, directionID: e.target.value }))}
               >
-                {directions.map((r) => (
-                  <option key={r} value={r}>{r}</option>
+                <option value="" disabled>Select direction</option>
+                {directions.map(d => (
+                  <option key={d.directionID} value={d.directionID}>{d.directionName}</option>
                 ))}
               </select>
+
               <div className="absolute top-2.5 right-3 pointer-events-none text-gray-400">
                 ▼
               </div>
@@ -82,7 +179,7 @@ export default function AddClassModal(onClose){
             Cancel
           </button>
           <button
-              onClick={(e) => saveUser(e)}
+              onClick={(e) => saveClass(e)}
               disabled={saveButtonDisabled}
               className={`px-6 py-2 text-base rounded-md transition 
                 ${saveButtonDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer'}`}
