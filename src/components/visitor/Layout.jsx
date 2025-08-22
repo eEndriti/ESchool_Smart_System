@@ -88,7 +88,7 @@ const Layout = () => {
                 ))}
                 <NavLink
                     to="/login"
-                    className="block text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="cursor-pointer block text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={() => setMobileOpen(false)}
                 >
                     Login

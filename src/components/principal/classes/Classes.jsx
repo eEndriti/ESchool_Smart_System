@@ -8,10 +8,6 @@ import GeneralConfirmModal from '../../Universal Files/GeneralConfirmModal';
 import Generations from './Generations';
 import Directions from './Directions';
 
-const sampleData = {
-  2019: [{ id: 1, name: '9-A', teacher: 'Mrs. Smith', students: 22, generation: 2019 }],
-  2020: [{ id: 2, name: '10-B', teacher: 'Mr. John', students: 25, generation: 2020 }],
-};
 
 
 const Classes = () => {
@@ -19,7 +15,6 @@ const Classes = () => {
   const [generation, setGeneration] = useState(2019);
   const [currentGeneration, setCurrentGeneration] = useState()
   const [currentDirection, setCurrentDirection] = useState()
-  const [classes, setClasses] = useState(sampleData);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
   const [openAddClassModal, setOpenAddClassModal] = useState(false);
@@ -55,7 +50,7 @@ const Classes = () => {
         <div className="p-4">
           <ClassTable
             direction = {currentDirection}
-
+            currentGeneration = {currentGeneration}
           />
         </div>
       </section>}

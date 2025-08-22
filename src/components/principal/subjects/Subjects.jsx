@@ -1,17 +1,48 @@
-import React, { useState } from 'react';
-import { Eye, Pencil } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenSquare, faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import AddSubjectModal from '../students/AddSubjectModal';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
+import DeleteDocumentModal from '../../universalComponentModals/DeleteDocumentModal'
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
-const dummySubjects = [
-  { id: 1, name: 'Mathematics', teacher: 'Mrs. Smith', credits: 5, class: '10-A' },
-  { id: 2, name: 'Biology', teacher: 'Dr. John', credits: 3, class: '11-B' },
-  { id: 3, name: 'Physics', teacher: 'Mr. Brown', credits: 4, class: '12-A' },
-];
 
 const Subjects = () => {
   const [search, setSearch] = useState('');
+  const [addSubject, setAddSubject] = useState(false)
+  const [subjects, setSubjects] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [deleteSubject,setDeleteSubject] = useState()
+  useEffect(() => {
+      setLoading(true)
+        const q = query(
+          collection(db, "subjects")
+        );
+      
+        const unsubscribe = onSnapshot(
+          q,
+          (snapshot) => {
+            const users = snapshot.docs.map((d) => ({
+              id: d.id,          
+              ...d.data(),       
+            }));
+            setSubjects(users);
+            setLoading(false);
+          },
+          (err) => {
+            console.error(err);
+            setLoading(false);
+          }
+        );
+      
+        return () => unsubscribe();
+      }, []);
+
   
-  const filteredSubjects = dummySubjects.filter(sub =>
-    sub.name.toLowerCase().includes(search.toLowerCase())
+
+  const filteredSubjects = subjects.filter(sub =>
+    sub.subject.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -26,17 +57,19 @@ const Subjects = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {/* Future dropdowns or filters can go here */}
+        <button className='text-white bg-green-700 p-3 rounded-xl cursor-pointer hover:bg-green-800' onClick={() => setAddSubject(true)}>Add Subject +</button>
+
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border text-sm text-left rounded-md overflow-hidden shadow-sm bg-white">
+        {loading ? <div className='d-flex justify-self-center'> <PropagateLoader size={28} color='#38bdf8'/> </div> :<table className="min-w-full border text-sm capitalize text-left rounded-md overflow-hidden shadow-sm bg-white">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="px-6 py-3 border-b">Subject</th>
               <th className="px-6 py-3 border-b">Teacher</th>
               <th className="px-6 py-3 border-b">Credits</th>
-              <th className="px-6 py-3 border-b">Class</th>
+              <th className="px-6 py-3 border-b">Direction</th>
+              <th className="px-6 py-3 border-b">Generation</th>
               <th className="px-6 py-3 border-b text-center">Actions</th>
             </tr>
           </thead>
@@ -44,18 +77,17 @@ const Subjects = () => {
             {filteredSubjects.length > 0 ? (
               filteredSubjects.map((subject) => (
                 <tr key={subject.id} className="hover:bg-gray-50 transition">
-                  <td className="px-6 py-3 border-b">{subject.name}</td>
-                  <td className="px-6 py-3 border-b">{subject.teacher}</td>
-                  <td className="px-6 py-3 border-b">{subject.credits}</td>
-                  <td className="px-6 py-3 border-b">{subject.class}</td>
+                  <td className="px-6 py-3 border-b ">{subject.subject}</td>
+                  <td className="px-6 py-3 border-b">{subject.teacherName}</td>
+                  <td className="px-6 py-3 border-b ">{subject.credits}</td>
+                  <td className="px-6 py-3 border-b">{subject.directionName}</td>
+                  <td className="px-6 py-3 border-b">{subject.generationYear}</td>
                   <td className="px-6 py-3 border-b text-center">
-                    <button className="text-blue-600 hover:underline mr-3">
-                      <Eye size={16} className="inline mr-1" />
-                      View
+                    <button className="text-blue-600 text-lg hover:underline mr-3 cursor-pointer">
+                      <FontAwesomeIcon icon={faPenToSquare} />
                     </button>
-                    <button className="text-yellow-600 hover:underline">
-                      <Pencil size={16} className="inline mr-1" />
-                      Edit
+                    <button className="text-red-600 text-lg hover:underline cursor-pointer" onClick={() => setDeleteSubject(subject)}>
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>
@@ -66,8 +98,10 @@ const Subjects = () => {
               </tr>
             )}
           </tbody>
-        </table>
+        </table>}
       </div>
+      {addSubject && <AddSubjectModal onClose={() => setAddSubject(false)}/>}
+      {deleteSubject && <DeleteDocumentModal open={true} deleteData={deleteSubject} onClose={() => setDeleteSubject(null)} collection='subjects' type='Subject'/>}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { faPenToSquare,faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DeleteDocumentModal from '../../universalComponentModals/DeleteDocumentModal';
 import UpdateUserModal from '../../universalComponentModals/UpdateUserModal';
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
 const Administrators = () => {
   const [addAdministratorModal, setAddAdministratorModal] = useState(false)
@@ -35,6 +36,7 @@ useEffect(() => {
       setAdministrators(users);
       setFilteredAdministrators(users);
       setLoading(false);
+
     },
     (err) => {
       console.error(err);
@@ -76,7 +78,7 @@ useEffect(()=>{
         <button className='text-white bg-green-700 p-3 rounded-xl cursor-pointer hover:bg-green-800' onClick={() => setAddAdministratorModal(true)}>Add Adminstrator +</button>
       </div>
 
-      {loading ? 'Loading Component...' : 
+      {loading ? <div className='d-flex justify-self-center'> <PropagateLoader size={28} color='#38bdf8'/> </div> : 
       <div className="overflow-x-auto">
         <table className="min-w-full border text-sm text-left rounded-md overflow-hidden shadow-sm bg-white">
           <thead className="bg-gray-100 text-gray-700">

@@ -1,4 +1,4 @@
- export default function manualDateFormat(inputDate){
+ export default function manualDateFormat(inputDate = ''){
      const date = new Date(inputDate);
 
   const dd = String(date.getDate()).padStart(2, '0');

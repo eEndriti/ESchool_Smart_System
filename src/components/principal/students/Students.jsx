@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Trash2, FilePenLine } from 'lucide-react';
 import AddUserModal from '../../universalComponentModals/AddUserModal';
 import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import { faPenToSquare,faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DeleteDocumentModal from '../../universalComponentModals/DeleteDocumentModal';
 import UpdateUserModal from '../../universalComponentModals/UpdateUserModal';
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
 const Students = () => {
   const [addStudentModal, setAddStudentModal] = useState(false)
@@ -18,18 +19,20 @@ const Students = () => {
   const [deleteModal, setDeleteModal] = useState(null)
   const [updateUserData, setUpdateUserData] = useState(null)
 useEffect(() => {
-  const q = query(
+  const fetchData = async () => {
+    const q = await query(
     collection(db, "users"),
-    where("userRole", "==", "student")
+    where("userRole", "==", "student"),where("sidn",">","0")
   );
 
-  const unsubscribe = onSnapshot(
+  const unsubscribe = await  onSnapshot(
     q,
     (snapshot) => {
       const users = snapshot.docs.map((d) => ({
         id: d.id,          
         ...d.data(),       
       }));
+      console.log('users',users)
       setStudents(users);
       setFilteredStudents(users);
       setLoading(false);
@@ -41,15 +44,23 @@ useEffect(() => {
   );
 
   return () => unsubscribe();
+  }
+
+  fetchData()
 }, []);
 
 
-useEffect(()=>{
 
-    let filter = students.filter(admin => (admin.userName?.toLowerCase().includes(searchParam?.toLowerCase())))
-    setFilteredStudents(filter)
+useEffect(() => {
+  if (!Array.isArray(students)) return;
 
-},[searchParam])
+  let filter = students.filter(s =>
+    s?.userName?.toLowerCase().includes((searchParam || "").toLowerCase())
+  );
+  setFilteredStudents(filter);
+}, [searchParam, students]);
+
+
 
   const deleteDocumet = (subject) => {
     setDeleteModal(subject)
@@ -74,7 +85,7 @@ useEffect(()=>{
         <button className='text-white bg-green-700 p-3 rounded-xl cursor-pointer hover:bg-green-800' onClick={() => setAddStudentModal(true)}>Add Student +</button>
       </div>
 
-      {loading ? 'Loading Component...' : 
+      {loading ? <div className='d-flex justify-self-center'> <PropagateLoader size={28} color='#38bdf8'/> </div> : 
       <div className="overflow-x-auto">
         <table className="min-w-full border text-sm text-left rounded-md overflow-hidden shadow-sm bg-white">
           <thead className="bg-gray-100 text-gray-700">

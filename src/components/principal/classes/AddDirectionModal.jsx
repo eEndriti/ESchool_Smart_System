@@ -10,11 +10,12 @@ const AddDirectionModal = ({ onClose }) => {
   const [saveButtonDisabled,setSaveButtonDisabled] = useState(true)
   const [buttonLoading,setButtonLoading] = useState(false)
   const [directionName,setDirectionName] = useState(null)
-  const [selectedGeneration,setSelectedGeneration] = useState(null)
+  const [selectedGeneration,setSelectedGeneration] = useState({generationID:'',generationYear:''})
   const [generations, setGenerations] = useState([])
   const toast = useToast()
   
   useEffect(() => {
+    console.log(selectedGeneration)
     if (directionName && selectedGeneration) {
       setSaveButtonDisabled(false)
     }else {
@@ -53,7 +54,7 @@ const saveDirection = async (e) => {
         setButtonLoading(true)
         await addDoc(collection(db, "directions"), {
         directionName: directionName,
-        generationID:selectedGeneration,
+        ...selectedGeneration,
         createdDate: new Date().toISOString(),
         });
 
@@ -93,12 +94,14 @@ const saveDirection = async (e) => {
                 <div className="relative">
                 {loading ? <ClipLoader size={16} /> : <select
                     className="w-full appearance-none input pr-10 cursor-pointer"
-                    value={selectedGeneration} 
-                    onChange={(e) => setSelectedGeneration(e.target.value)}
+                    value={selectedGeneration.generationID} 
+                    onChange={(e) => setSelectedGeneration({  generationID: e.target.value,generationYear:e.target.selectedOptions[0].dataset.name })}
                 >
+                                  <option value="" disabled>Select Generation</option>
+
                     {generations.map((r) => (
                         
-                    <option key={r.id} value={r.id}>{r.year}</option>
+                    <option key={r.id} value={r.id} data-name = {r.year}>{r.year}</option>
                     ))}
                 </select>}
                 <div className="absolute top-2.5 right-3 pointer-events-none text-gray-400">

@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import  {useUser}  from '../components/Universal Files/UserContext';
-
+import PropagateLoader from 'react-spinners/PropagateLoader.js'
 const RoleProtectedRoute = ({ allowedRoles, children }) => {
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
@@ -30,7 +30,7 @@ const RoleProtectedRoute = ({ allowedRoles, children }) => {
     return () => unsubscribe();
   }, []);
 
-  if (!authChecked) return <div>Loading...</div>;
+  if (!authChecked) return <div className='d-flex  justify-self-center mt-50'><PropagateLoader size = {25} color='#38bdf8'/></div>;
 
   if (!user) return <Navigate to="/login" replace />;
 

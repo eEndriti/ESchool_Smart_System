@@ -10,9 +10,9 @@ import Subjects from './components/student/subjects/Subjects';
 import Assignments from './components/student/assignment/Assignments';
 import AssignmentsTeacher from './components/teacher/Assignments/Assignments';
 import Transcript from './components/student/transcript/Transcript';
-import Library from './components/student/Library.jsx/Library';
-import Events from './components/student/Events/Events';
-import Forum from './components/student/Forum/Forum';
+import Library from './components/SharedComponents/Library.jsx/Library';
+import Events from './components/SharedComponents/Events/Events';
+import Forum from './components/SharedComponents/Forum/Forum';
 import Teacher from './components/teacher/dashboard/Teacher'
 import Grades from './components/teacher/Grades/Grades';
 import Administrator from './components/Administrator/Dashboard/Administrator';

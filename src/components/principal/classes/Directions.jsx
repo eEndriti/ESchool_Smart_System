@@ -5,6 +5,7 @@ import { addDoc, collection, onSnapshot, query, where } from 'firebase/firestore
 import { db } from '../../../firebaseConfig';
 import ClipLoader from 'react-spinners/ClipLoader';
 import AddDirectionModal from './AddDirectionModal';
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
 const Directions = ({currentGeneration = '',onSelect}) => {
 
@@ -64,7 +65,7 @@ const Directions = ({currentGeneration = '',onSelect}) => {
           </button>
         </header>
         <div className="px-3 pb-3 pt-2">
-         {loading ? <ClipLoader size={30} />:  
+         {loading ? <div className='d-flex justify-self-center'> <PropagateLoader size={28} color='#38bdf8'/> </div>:  
             <>
                 {directionsForTabs.length > 0 ? 
                     <Tabs

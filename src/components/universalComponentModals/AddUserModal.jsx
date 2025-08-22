@@ -58,11 +58,11 @@ const saveUser = async (e) => {
       createdDate: new Date().toISOString(),
     });
 
-    toast.success('Administrator is saved successfully!')
+    toast.success('User is saved successfully!')
     onClose()
 
   } catch (error) {
-    toast.error('Error Saving Administrator: ',error)
+    toast.error('Error Saving User: ',error)
   }finally{
     setButtonLoading(false)
   }
@@ -74,7 +74,7 @@ const saveUser = async (e) => {
       <div className="bg-white w-full max-w-3xl mx-4 rounded-2xl shadow-2xl p-10 animate-fade-in transition-all duration-300">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold text-gray-800">Add New {role}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl cursor-pointer">&times;</button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-base">

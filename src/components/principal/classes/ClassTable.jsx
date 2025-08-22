@@ -5,12 +5,15 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import ClipLoader from 'react-spinners/ClipLoader';
 import DeleteDocumentModal from '../../universalComponentModals/DeleteDocumentModal';
+import UpdateClassModal from './UpdateClassModal';
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
-const ClassTable = ({ direction}) => {
+const ClassTable = ({ direction,currentGeneration}) => {
 
   const [loading, setLoading] = useState(false)
   const [classes, setClasses] = useState({})
   const [deleteModal, setDeleteModal] = useState(false)
+  const [updateModal, setUpdateModal] = useState(false)
 
    useEffect(() => {
     setLoading(true)
@@ -41,7 +44,7 @@ const ClassTable = ({ direction}) => {
    
   return (
          <div className="overflow-x-auto">
-           {loading ? <ClipLoader size={30} /> : <table className="min-w-full border text-sm text-left rounded-md overflow-hidden shadow-sm bg-white">
+           {loading ? <div className='d-flex justify-self-center'> <PropagateLoader size={28} color='#38bdf8'/> </div> : <table className="min-w-full border text-sm text-left rounded-md overflow-hidden shadow-sm bg-white">
              <thead className="bg-gray-100 text-gray-700">
                <tr>
                  <th className="px-6 py-3 border-b">Class</th>
@@ -61,7 +64,7 @@ const ClassTable = ({ direction}) => {
                      <td className="px-6 py-3 border-b">{item.noStudents}</td>
                     
                      <td className="px-6 py-3 border-b text-center">
-                       <button className="text-blue-600 hover:cursor-pointer hover:text-blue-800 mx-3" onClick={(e) => callUpdateModal(item)}>
+                       <button className="text-blue-600 hover:cursor-pointer hover:text-blue-800 mx-3" onClick={(e) => setUpdateModal(item)}>
                          <FontAwesomeIcon icon={faPenToSquare} className='text-lg'/>
                            
                        </button>
@@ -81,6 +84,7 @@ const ClassTable = ({ direction}) => {
            </table>}
 
            {deleteModal && <DeleteDocumentModal open={true} onClose={() => setDeleteModal(null) } collection = "classes" deleteData = {deleteModal} type='Class'/>}
+           {updateModal && <UpdateClassModal onClose={() => setUpdateModal(null)}  currentClassData={updateModal} currentGeneration={currentGeneration}/>}
          </div>
   );
 };

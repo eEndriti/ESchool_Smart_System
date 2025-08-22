@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword,getAuth } from 'firebase/auth';
 import app from '../../firebaseConfig.js'
 import { doc, getFirestore,getDoc } from 'firebase/firestore';
+import { LoaderPinwheel } from 'lucide-react';
+import HashLoader from 'react-spinners/HashLoader.js';
 const Login = () => {
 
   const [email, setEmail] = useState()
@@ -15,6 +17,7 @@ const Login = () => {
   const handleLogin = async (e) =>{
     e.preventDefault()
     try {
+      setButtonLoading(true)
       const result = await signInWithEmailAndPassword(auth,email,password)
       const role = await getUserRole()
       if(role == 'student') navigate('/student')
@@ -24,6 +27,8 @@ const Login = () => {
       else if(role == 'principal') navigate('/principal')
     } catch (error) {
           console.log(error)
+        }finally{
+          setButtonLoading(false)
         }
   }
 
@@ -72,9 +77,9 @@ const Login = () => {
 
           <button
             type="submit" onClick={(e) => handleLogin(e)} disabled = {buttonLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-200"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition duration-200 cursor-pointer"
           >
-            Log In
+            {buttonLoading ? <HashLoader size={18} color='white' />:'Log in'}
           </button>
         </form>
 
