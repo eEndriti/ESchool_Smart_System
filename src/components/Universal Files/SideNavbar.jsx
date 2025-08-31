@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const SideNavbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const { userRole } = useUser();
+  const { userRole,currentUser } = useUser();
 
   const navLinks = [
     { label: 'Dashboard', icon: faGrip, path: '', roles: ['student', 'teacher', 'administrator','parent','principal'] },
@@ -77,7 +77,7 @@ const SideNavbar = () => {
         <div className="flex items-center justify-start gap-3 px-4 h-20 border-b border-slate-200">
           <img src={userIcon} className="h-10 w-10 rounded-full ring-2 ring-slate-100" alt="User" />
           <div className="min-w-0">
-            <h1 className="font-semibold leading-5 truncate">Emri Mbiemri</h1>
+            <h1 className="font-semibold leading-5 truncate">{currentUser.userName}</h1>
             <p className="text-xs text-slate-500 truncate capitalize">{userRole}</p>
           </div>
         </div>

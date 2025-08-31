@@ -3,6 +3,7 @@ import { db } from "../../firebaseConfig";
 import { useEffect, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useToast } from "../Universal Files/ToastProvider";
+import { useNavigate } from "react-router-dom";
 
 const ANIM_MS = 200; 
 
@@ -11,7 +12,7 @@ export default function DeleteDocumentModal({open,title = "Are you sure?",descri
   const [render, setRender] = useState(open); 
   const [show, setShow] = useState(false);    
   const toast = useToast();
-
+  const navigate = useNavigate()
   useEffect(() => {
     if (open) {
       setRender(true);
@@ -34,8 +35,24 @@ export default function DeleteDocumentModal({open,title = "Are you sure?",descri
       })
       .finally(() => {
         setButtonLoading(false);
+        checkForGoBack()
         onClose?.();
       });
+
+  };
+
+  function checkForGoBack(){
+    if(type.toLowerCase() == 'topic'){
+      goBackOneLevel()
+    }
+  }
+
+  const goBackOneLevel = () => {
+    const currentPath = window.location.pathname; 
+    const segments = currentPath.split("/").filter(Boolean); 
+    segments.pop(); 
+    const newPath = "/" + segments.join("/");
+    navigate(newPath);
   };
 
   const declined = () => onClose?.();

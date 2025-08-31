@@ -10,7 +10,7 @@ const RoleProtectedRoute = ({ allowedRoles, children }) => {
   const [role, setRole] = useState(null);
   const db = getFirestore();
   const auth = getAuth();
-  const { setUserRole } = useUser();
+  const { setUserRole,setCurrentUser } = useUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
@@ -19,6 +19,10 @@ const RoleProtectedRoute = ({ allowedRoles, children }) => {
         if (docSnap.exists()) {
           setRole(docSnap.data().userRole);
           setUserRole(docSnap.data().userRole)
+          setCurrentUser({
+            ...docSnap.data(),
+            uid:u.uid
+          })
         }
         setUser(u);
       } else {

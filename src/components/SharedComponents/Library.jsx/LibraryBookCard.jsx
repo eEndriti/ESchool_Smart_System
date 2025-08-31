@@ -50,11 +50,11 @@ const LibraryBookCard = ({book,isFavorite,onFavoriteToggle}) => {
       <div className="flex min-w-0 flex-col p-4 md:p-5">
         <div className="flex items-start justify-between gap-3 border-b-1 pb-1 border-slate-400">
           <div className="min-w-0 ">
-            <h3 className="truncate text-lg font-semibold leading-tight text-slate-900">
+            <h3 className="truncate text-lg font-semibold leading-tight text-slate-900 capitalize">
               {book?.title || "Untitled"}
             </h3>
             <div className="mt-0.5 flex items-center gap-2 ">
-              <span className="truncate text-sm text-slate-900">
+              <span className="truncate text-sm text-slate-900 capitalize">
                 {book?.author || "Unknown author"}
               </span>
             </div>
@@ -102,13 +102,13 @@ const LibraryBookCard = ({book,isFavorite,onFavoriteToggle}) => {
         </div>
 
         <p
-          className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-700 "
+          className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-700 capitalize"
           title={book?.description}
         >
           {book?.description || "No description available."}
         </p>
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 capitalize">
           <Rating value={book?.rating} />
 
           {book?.category && (

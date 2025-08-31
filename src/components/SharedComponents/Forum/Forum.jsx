@@ -1,40 +1,84 @@
-import React, { useState } from 'react';
-import { MessageCircle, SendHorizonal, UserCircle2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {  MessageCircle, SendHorizonal, UserCircle2 } from 'lucide-react';
+import AddDiscusion from './AddDiscusion';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
+import  { formatFirestoreTimestamp } from '../../Universal Files/GeneralMethods';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
-const sampleTopics = [
-  {
-    id: 1,
-    title: "What’s the best way to prepare for the math midterm?",
-    author: "Arber G.",
-    category: "Mathematics",
-    createdAt: "2025-07-25",
-    replies: 3,
-  },
-  {
-    id: 2,
-    title: "Can we submit assignments late if we're sick?",
-    author: "Liria K.",
-    category: "General",
-    createdAt: "2025-07-24",
-    replies: 1,
-  },
-  {
-    id: 3,
-    title: "Any tips for writing essays in English class?",
-    author: "Besnik T.",
-    category: "Language",
-    createdAt: "2025-07-20",
-    replies: 2,
-  },
-];
 
 const Forum = () => {
-  const [topics, setTopics] = useState(sampleTopics);
+  const [topics, setTopics] = useState();
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [newTopic, setNewTopic] = useState({ title: '', author: '', category: '' });
+  const [directions, setDirections] = useState([])
 
-  const filteredTopics = topics.filter((topic) => {
+  const navigate = useNavigate()
+
+
+      useEffect(() => {
+
+      const fetchData = async () => {
+        setLoading(true);
+        const q = await query(
+        collection(db, "directions")
+      );
+    
+      const unsubscribe = await  onSnapshot(
+        q,
+        (snapshot) => {
+          const dirs = snapshot.docs.map((d) => ({
+            id: d.id,          
+            ...d.data(),       
+          }));
+          setDirections(dirs)
+          setLoading(false);
+        },
+        (err) => {
+          console.error(err);
+          setLoading(false);
+        }
+      );
+    
+      return () => unsubscribe();
+      }
+    
+      fetchData()
+    }, []);
+
+    useEffect(() => {
+
+      const fetchData = async () => {
+        setLoading(true);
+        const q = await query(
+        collection(db, "forum")
+      );
+    
+      const unsubscribe = await  onSnapshot(
+        q,
+        (snapshot) => {
+          const dirs = snapshot.docs.map((d) => ({
+            id: d.id,          
+            ...d.data(),       
+          }));
+          setTopics(dirs)
+          setLoading(false);
+        },
+        (err) => {
+          console.error(err);
+          setLoading(false);
+        }
+      );
+    
+      return () => unsubscribe();
+      }
+    
+      fetchData()
+    }, []);
+
+    const filteredTopics = topics?.filter((topic) => {
     const matchesSearch = topic.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'All' || topic.category === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -59,42 +103,8 @@ const Forum = () => {
         <MessageCircle className="text-blue-500" /> Student Forum
       </h1>
 
-      {/* Post a topic */}
-      <div className="bg-white shadow p-4 rounded-lg space-y-3 border border-gray-200">
-        <h2 className="font-medium text-lg text-gray-700">Start a Discussion</h2>
-        <input
-          type="text"
-          placeholder="Your name"
-          value={newTopic.author}
-          onChange={(e) => setNewTopic({ ...newTopic, author: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        />
-        <input
-          type="text"
-          placeholder="Enter a topic..."
-          value={newTopic.title}
-          onChange={(e) => setNewTopic({ ...newTopic, title: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        />
-        <select
-          value={newTopic.category}
-          onChange={(e) => setNewTopic({ ...newTopic, category: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option value="">Select Category</option>
-          <option value="Mathematics">Mathematics</option>
-          <option value="Language">Language</option>
-          <option value="General">General</option>
-        </select>
-        <button
-          onClick={handlePost}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-1"
-        >
-          <SendHorizonal className="w-4 h-4" /> Post
-        </button>
-      </div>
+      {!loading  && directions && <AddDiscusion directions={directions}/>}
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <input
           type="text"
@@ -115,32 +125,33 @@ const Forum = () => {
         </select>
       </div>
 
-      {/* Topic list */}
-      <div className="space-y-4">
+      {filteredTopics && <div className="space-y-4">
         {filteredTopics.map((topic) => (
-          <div
+          <NavLink to={`${topic.id}`} >
+            <div
             key={topic.id}
-            className="bg-white shadow-md rounded-lg p-4 flex justify-between items-start border border-gray-100 hover:shadow-lg transition"
+            className="bg-white shadow-md rounded-lg p-4 flex justify-between items-start border border-gray-100 hover:shadow-lg transition cursor-pointer my-5"
           >
             <div>
               <h3 className="text-lg font-semibold text-gray-800">{topic.title}</h3>
               <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                <UserCircle2 className="w-4 h-4" /> {topic.author} • {topic.createdAt}
+                <UserCircle2 className="w-4 h-4" /> {topic.userName} • {formatFirestoreTimestamp(topic.createdDate)}
               </p>
               <span className="text-xs inline-block mt-2 px-2 py-1 bg-gray-100 rounded text-gray-600">
-                {topic.category}
+                {topic.categoryName}
               </span>
             </div>
             <div className="text-sm text-gray-600">
               💬 {topic.replies} replies
             </div>
           </div>
+          </NavLink>
         ))}
 
         {filteredTopics.length === 0 && (
           <p className="text-center text-gray-400 mt-4">No topics found.</p>
         )}
-      </div>
+      </div>}
     </div>
   );
 };

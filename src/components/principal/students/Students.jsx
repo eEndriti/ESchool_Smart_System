@@ -32,7 +32,6 @@ useEffect(() => {
         id: d.id,          
         ...d.data(),       
       }));
-      console.log('users',users)
       setStudents(users);
       setFilteredStudents(users);
       setLoading(false);

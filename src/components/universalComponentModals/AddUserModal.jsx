@@ -1,7 +1,6 @@
 import  { useState, useEffect } from 'react';
-import { collection,  serverTimestamp, setDoc,doc, addDoc } from "firebase/firestore";
-import { db,auth } from '../../firebaseConfig.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { collection,   addDoc } from "firebase/firestore";
+import { db } from '../../firebaseConfig.js';
 import { useToast } from "../Universal Files/ToastProvider"; 
 import ClipLoader from "react-spinners/ClipLoader";
 

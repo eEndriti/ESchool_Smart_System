@@ -24,6 +24,7 @@ import Administrators from './components/principal/administrator/Administrators'
 import Teachers from './components/principal/teacher/Teachers';
 import Students from './components/principal/students/Students';
 import Parents from './components/principal/Parents/Parents';
+import ForumDetail from './components/SharedComponents/Forum/ForumDetails';
 
 const LayoutWrapper = () => {
   return <Layout />;
@@ -166,6 +167,10 @@ const router = createBrowserRouter([
         },{
           path:'forum',
           element:<Forum/>
+        }
+        ,{
+          path:'forum/:id',
+          element:<ForumDetail/>
         }
       ]
     },
