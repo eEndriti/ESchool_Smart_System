@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {  MessageCircle, SendHorizonal, UserCircle2 } from 'lucide-react';
 import AddDiscusion from './AddDiscusion';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, getCountFromServer, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import  { formatFirestoreTimestamp } from '../../Universal Files/GeneralMethods';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -49,34 +49,45 @@ const Forum = () => {
     }, []);
 
     useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
 
-      const fetchData = async () => {
-        setLoading(true);
-        const q = await query(
-        collection(db, "forum")
-      );
-    
-      const unsubscribe = await  onSnapshot(
-        q,
-        (snapshot) => {
-          const dirs = snapshot.docs.map((d) => ({
-            id: d.id,          
-            ...d.data(),       
-          }));
-          setTopics(dirs)
-          setLoading(false);
-        },
-        (err) => {
-          console.error(err);
-          setLoading(false);
-        }
-      );
-    
-      return () => unsubscribe();
+    const q = query(collection(db, "forum"));
+    const unsubscribe = onSnapshot(
+      q,
+      async (snapshot) => {
+        const topics = await Promise.all(
+          snapshot.docs.map(async (d) => {
+            const topicId = d.id;
+
+            const repliesQuery = query(
+              collection(db, "forumReplies"),
+              where("topicId", "==", topicId)
+            );
+            const repliesCount = await getCountFromServer(repliesQuery);
+
+            return {
+              id: topicId,
+              ...d.data(),
+              repliesCount: repliesCount.data().count,
+            };
+          })
+        );
+
+        setTopics(topics);
+        setLoading(false);
+      },
+      (err) => {
+        console.error(err);
+        setLoading(false);
       }
-    
-      fetchData()
-    }, []);
+    );
+
+    return () => unsubscribe();
+  };
+
+  fetchData();
+}, []);
 
     const filteredTopics = topics?.filter((topic) => {
     const matchesSearch = topic.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -142,7 +153,7 @@ const Forum = () => {
               </span>
             </div>
             <div className="text-sm text-gray-600">
-              💬 {topic.replies} replies
+              💬 {topic?.repliesCount} replies
             </div>
           </div>
           </NavLink>

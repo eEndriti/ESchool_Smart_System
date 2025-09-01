@@ -17,7 +17,7 @@ import Teacher from './components/teacher/dashboard/Teacher'
 import Grades from './components/teacher/Grades/Grades';
 import Administrator from './components/Administrator/Dashboard/Administrator';
 import Parent from './components/parent/dashboard/Parent';
-import Principal from './components/principal/dashboard/principal';
+import Principal from './components/principal/dashboard/Principal';
 import Classes from './components/principal/classes/Classes';
 import PrincipalSubjects from './components/principal/subjects/Subjects'
 import Administrators from './components/principal/administrator/Administrators';

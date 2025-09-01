@@ -144,7 +144,7 @@ const LibraryBookCard = ({book,isFavorite,onFavoriteToggle}) => {
           </div>
 
           <a
-            href={book.link}
+            href={'https://manybooks.net'} target="_blank" rel="noopener noreferrer"
             className="
               inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2
               text-sm font-medium text-white transition hover:shadow-md
